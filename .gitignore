@@ -1,0 +1,28 @@
+# CMake generated files
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Compiled Fortran files (if they appear outside build/)
+*.o
+*.mod
+*.smod
+
+# Linker files
+*.a
+*.so
+*.dylib
+*.dll
+
+# Executables (if any created, though this is a library)
+*.exe
+
+# Common IDE/editor specific files
+.vscode/
+.windsurf/
+.idea/
+*.swp
+*~
