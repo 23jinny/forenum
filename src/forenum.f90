@@ -31,7 +31,6 @@ module forenum
   !   
   !   ! Should use PascalCase_e for enum type names.
   !   type, extends(EnumBase_t) :: MyColor_e
-  !     ! No additional components needed unless specific to this enum
   !   end type MyColor_e
   !
   !   ! Use plain integer literals for the values.
@@ -53,7 +52,7 @@ contains
     ! Check if the dynamic types are the same
     if (.not. same_type_as(this, other)) then
       write (*, '(A)') 'ERROR: [forenum.enums_are_equal] Attempting to compare enums of different types.'
-      stop 1111 ! Stop with a non-zero status.
+      stop 1 ! Stop with a non-zero status.
     end if
 
     is_equal = this % enum_value == other % enum_value
@@ -65,7 +64,7 @@ contains
 
     if (.not. same_type_as(this, other)) then
       write (*, '(A)') 'ERROR: [forenum.enums_are_not_equal] Attempting to compare enums of different types.'
-      stop 2222 ! Stop with a non-zero status.
+      stop 1 ! Stop with a non-zero status.
     end if
     is_not_equal = this % enum_value /= other % enum_value
   end function enums_are_not_equal
