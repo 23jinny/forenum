@@ -13,7 +13,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     # This CMakeLists.txt is for the top-level project. This typically means
     # you are developing 'forenum' itself.
     set(FORENUM_IS_STANDALONE TRUE)
-    project(forenum_project LANGUAGES Fortran)
+    project(forenum LANGUAGES Fortran)
     message(STATUS "Configuring 'forenum' as a standalone project (for development/testing).")
 
     # Standalone-specific configurations (examples):
@@ -29,7 +29,7 @@ else()
     # We use project(name NONE) to set our project name for this scope ('forenum_project')
     # without re-initializing languages or interfering with the parent project's setup.
     set(FORENUM_IS_STANDALONE FALSE)
-    project(forenum_project NONE)
+    project(forenum NONE)
     message(STATUS "Configuring 'forenum' as a submodule (part of parent project: ${CMAKE_PROJECT_NAME}).")
 endif()
 
@@ -45,19 +45,19 @@ message(STATUS "Defining 'mod_forenum' INTERFACE library target...")
 # 'mod_forenum' is an INTERFACE library. It doesn't compile into a separate
 # .a or .so file. Instead, its source files and include directories are
 # "interfaced" to any target that links against it.
-add_library(mod_forenum INTERFACE)
+add_library(forenum INTERFACE)
 
 # Specify the source file(s) that constitute the 'forenum' library.
 # When another target links to 'mod_forenum', CMake ensures this source file
 # is compiled as part of that target.
-target_sources(mod_forenum INTERFACE
+target_sources(forenum INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/src/forenum.f90"
 )
 
 # Specify the include directories required to use 'mod_forenum'.
 # This allows consuming projects to 'use forenum' and for
 # the compiler to locate 'forenum.f90' and its generated .mod file.
-target_include_directories(mod_forenum INTERFACE
+target_include_directories(forenum INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/src"  # Directory containing forenum.f90
 )
 
@@ -97,8 +97,8 @@ if(FORENUM_BUILD_TESTS)
 
     # Link the test executable against our 'mod_forenum' library.
     # This ensures the test program can use the enumeration module.
-    target_link_libraries(run_forenum_tests PRIVATE mod_forenum)
-    message(STATUS "  Linked 'run_forenum_tests' against 'mod_forenum'.")
+    target_link_libraries(run_forenum_tests PRIVATE forenum)
+    message(STATUS "  Linked 'run_forenum_tests' against 'forenum'.")
 
     # Add the test to CTest.
     # 'ctest' will run 'run_forenum_tests'. The test passes if the executable returns 0.
