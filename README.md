@@ -22,10 +22,10 @@ forenum (short for "fortran enumerations") is a small Fortran library providing 
     # Add the forenum subdirectory (adjust path if you changed it above)
     add_subdirectory(third_party/forenum)
 
-    # Link your target against mod_forenum
-    target_link_libraries(your_application_target PRIVATE mod_forenum)
+    # Link your target against forenum
+    target_link_libraries(your_application_target PRIVATE forenum)
     ```
-    *   `mod_forenum` is an `INTERFACE` library. Linking with `PRIVATE` is generally recommended and means `your_application_target` can use `forenum`. If other parts of your project also need `forenum`, they would link to it directly. For more details on `PUBLIC` or `INTERFACE` linking (e.g., if `your_application_target` is a library that exposes `forenum` types in its own API), please see the "Advanced CMake Integration" section below.
+    *   `forenum` is an `INTERFACE` library. Linking with `PRIVATE` is generally recommended and means `your_application_target` can use `forenum`. If other parts of your project also need `forenum`, they would link to it directly. For more details on `PUBLIC` or `INTERFACE` linking (e.g., if `your_application_target` is a library that exposes `forenum` types in its own API), please see the "Advanced CMake Integration" section below.
 
 3.  **Define Your Enums in Fortran:**
 
@@ -223,42 +223,42 @@ forenum addresses these by providing a base `abstract type` (`EnumBase_t`) from 
 
 ### Advanced CMake Integration
 
-**Understanding CMake Keywords for `mod_forenum`:**
+**Understanding CMake Keywords for `forenum`:**
 
-The `mod_forenum` library is defined as an `INTERFACE` library in its own `CMakeLists.txt`:
+The `forenum` library is defined as an `INTERFACE` library in its own `CMakeLists.txt`:
 ```cmake
 # In forenum/CMakeLists.txt:
-add_library(mod_forenum INTERFACE)
-target_sources(mod_forenum INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src/forenum.f90")
-target_include_directories(mod_forenum INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+add_library(forenum INTERFACE)
+target_sources(forenum INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src/forenum.f90")
+target_include_directories(forenum INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 ```
--   `add_library(mod_forenum INTERFACE)`: This declares that `mod_forenum` doesn't compile into a separate library file. Instead, its properties (like source files and include directories) are "interfaced" to consuming targets.
--   `target_sources(mod_forenum INTERFACE ...)`: This specifies that `forenum.f90` is a source file that consuming targets need to compile.
--   `target_include_directories(mod_forenum INTERFACE ...)`: This specifies that the `src` directory (containing `forenum.f90`) should be added to the include path of consuming targets. The `INTERFACE` keyword here means this include directory is part of `mod_forenum`'s public interface and is *always* propagated to any target that links against `mod_forenum`, regardless of whether that link is `PRIVATE`, `PUBLIC`, or `INTERFACE`.
+-   `add_library(forenum INTERFACE)`: This declares that `forenum` doesn't compile into a separate library file. Instead, its properties (like source files and include directories) are "interfaced" to consuming targets.
+-   `target_sources(forenum INTERFACE ...)`: This specifies that `forenum.f90` is a source file that consuming targets need to compile.
+-   `target_include_directories(forenum INTERFACE ...)`: This specifies that the `src` directory (containing `forenum.f90`) should be added to the include path of consuming targets. The `INTERFACE` keyword here means this include directory is part of `forenum`'s public interface and is *always* propagated to any target that links against `forenum`, regardless of whether that link is `PRIVATE`, `PUBLIC`, or `INTERFACE`.
 
-When you link your target to `mod_forenum` using `target_link_libraries`:
+When you link your target to `forenum` using `target_link_libraries`:
 ```cmake
-target_link_libraries(your_application_target <PRIVATE|PUBLIC|INTERFACE> mod_forenum)
+target_link_libraries(your_application_target <PRIVATE|PUBLIC|INTERFACE> forenum)
 ```
-The keywords `PRIVATE`, `PUBLIC`, and `INTERFACE` control how the *usage requirements* of `mod_forenum` (like its include directories and source files defined with `INTERFACE` in its own `CMakeLists.txt`) are propagated *further* if `your_application_target` is itself a library.
+The keywords `PRIVATE`, `PUBLIC`, and `INTERFACE` control how the *usage requirements* of `forenum` (like its include directories and source files defined with `INTERFACE` in its own `CMakeLists.txt`) are propagated *further* if `your_application_target` is itself a library.
 
-*   **`PRIVATE`**: If `your_application_target` links to `mod_forenum` with `PRIVATE`, it means `your_application_target` uses `mod_forenum` for its internal implementation. The properties of `mod_forenum` are applied to `your_application_target`. However, if another target (e.g., `final_executable`) links to `your_application_target` (which is a library), `mod_forenum`'s properties are *not* propagated to `final_executable`. If `final_executable` also needs `forenum`, it must link to `mod_forenum` directly.
+*   **`PRIVATE`**: If `your_application_target` links to `forenum` with `PRIVATE`, it means `your_application_target` uses `forenum` for its internal implementation. The properties of `forenum` are applied to `your_application_target`. However, if another target (e.g., `final_executable`) links to `your_application_target` (which is a library), `forenum`'s properties are *not* propagated to `final_executable`. If `final_executable` also needs `forenum`, it must link to `forenum` directly.
 
-*   **`PUBLIC`**: If `your_application_target` (a library) links to `mod_forenum` with `PUBLIC`, it means `mod_forenum` is part of `your_application_target`'s public API. The properties of `mod_forenum` are applied to `your_application_target`, AND they are also propagated to any target that links to `your_application_target`. This allows those downstream targets to also `use forenum` without linking to `mod_forenum` explicitly.
+*   **`PUBLIC`**: If `your_application_target` (a library) links to `forenum` with `PUBLIC`, it means `forenum` is part of `your_application_target`'s public API. The properties of `forenum` are applied to `your_application_target`, AND they are also propagated to any target that links to `your_application_target`. This allows those downstream targets to also `use forenum` without linking to `forenum` explicitly.
 
-*   **`INTERFACE`**: If `your_application_target` is *itself* an `INTERFACE` library and links to `mod_forenum` with `INTERFACE`, it means `mod_forenum`'s properties are added to `your_application_target`'s own interface properties, to be propagated to whatever links to `your_application_target`.
+*   **`INTERFACE`**: If `your_application_target` is *itself* an `INTERFACE` library and links to `forenum` with `INTERFACE`, it means `forenum`'s properties are added to `your_application_target`'s own interface properties, to be propagated to whatever links to `your_application_target`.
 
 In summary:
--   The `INTERFACE` keyword in `target_sources` and `target_include_directories` within `forenum/CMakeLists.txt` defines *what* `mod_forenum` provides to direct consumers.
+-   The `INTERFACE` keyword in `target_sources` and `target_include_directories` within `forenum/CMakeLists.txt` defines *what* `forenum` provides to direct consumers.
 -   The `PRIVATE`/`PUBLIC`/`INTERFACE` keywords in `target_link_libraries` in your project's `CMakeLists.txt` control *how far* those provisions are propagated if your target is also a library. For an executable target, `PRIVATE` is usually sufficient.
 
 **Multiple Targets Depending on `forenum`:**
 
 If multiple targets (e.g., several libraries and executables) within your larger project need to use `forenum`:
-1.  Call `add_subdirectory(third_party/forenum)` once, typically in a high-level `CMakeLists.txt` file if possible. If `add_subdirectory` for `forenum` is called multiple times with the same submodule path, CMake usually handles this correctly by processing the `forenum` project only once, ensuring the `mod_forenum` target is defined uniquely.
-2.  Each target that directly uses `forenum` (i.e., has `use forenum` in its Fortran source) must explicitly link to `mod_forenum` via `target_link_libraries(... mod_forenum)`.
+1.  Call `add_subdirectory(third_party/forenum)` once, typically in a high-level `CMakeLists.txt` file if possible. If `add_subdirectory` for `forenum` is called multiple times with the same submodule path, CMake usually handles this correctly by processing the `forenum` project only once, ensuring the `forenum` target is defined uniquely.
+2.  Each target that directly uses `forenum` (i.e., has `use forenum` in its Fortran source) must explicitly link to `forenum` via `target_link_libraries(... forenum)`.
 
-Because `mod_forenum` is an `INTERFACE` library, there are no conflicting compiled library files. CMake ensures that `forenum.f90` is compiled as needed by each consuming target and that the Fortran module (`forenum.mod`) is correctly found.
+Because `forenum` is an `INTERFACE` library, there are no conflicting compiled library files. CMake ensures that `forenum.f90` is compiled as needed by each consuming target and that the Fortran module (`forenum.mod`) is correctly found.
 
 ---
 ## Contributing
