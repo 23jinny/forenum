@@ -1,4 +1,4 @@
-module forenum
+module fortenum
   implicit none
   private
 
@@ -51,7 +51,7 @@ contains
 
     ! Check if the dynamic types are the same
     if (.not. same_type_as(this, other)) then
-      write (*, '(A)') 'ERROR: [forenum.enums_are_equal] Attempting to compare enums of different types.'
+      write (*, '(A)') 'ERROR: [fortenum.enums_are_equal] Attempting to compare enums of different types.'
       stop 1 ! Stop with a non-zero status.
     end if
 
@@ -63,10 +63,10 @@ contains
     class(EnumBase_t), intent(in) :: other
 
     if (.not. same_type_as(this, other)) then
-      write (*, '(A)') 'ERROR: [forenum.enums_are_not_equal] Attempting to compare enums of different types.'
+      write (*, '(A)') 'ERROR: [fortenum.enums_are_not_equal] Attempting to compare enums of different types.'
       stop 1 ! Stop with a non-zero status.
     end if
     is_not_equal = this % enum_value /= other % enum_value
   end function enums_are_not_equal
 
-end module forenum
+end module fortenum

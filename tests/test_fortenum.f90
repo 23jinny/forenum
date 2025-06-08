@@ -1,6 +1,6 @@
 ! --- Define First Enum: MyColor_e ---
 module mod_my_colors
-  use forenum, only: EnumBase_t
+  use fortenum, only: EnumBase_t
   implicit none
   private
 
@@ -17,7 +17,7 @@ end module mod_my_colors
 
 ! --- Define Second Enum: MyDirection_e ---
 module mod_my_directions
-  use forenum, only: EnumBase_t
+  use fortenum, only: EnumBase_t
   implicit none
   private
 
@@ -33,7 +33,7 @@ module mod_my_directions
   type(MyDirection_e), parameter :: DIR_WEST  = MyDirection_e(4)
 end module mod_my_directions
 
-program test_forenum_program
+program test_fortenum_program
   use mod_my_colors, only: MyColor_e, COLOR_RED, COLOR_GREEN, COLOR_BLUE
   use mod_my_directions, only: MyDirection_e, DIR_NORTH, DIR_EAST
   implicit none
@@ -45,7 +45,7 @@ program test_forenum_program
   integer :: pass_count = 0
 
   ! --- Begin Tests ---
-  write(*,*) "Starting Forenum Tests..."
+  write(*,*) "Starting fortenum Tests..."
   write(*,*) "========================="
 
   ! Test 1: Assignment
@@ -75,7 +75,7 @@ program test_forenum_program
   ! Test 5: Type Safety (Conceptual - relies on compiler)
   ! The following lines, if uncommented, should ideally cause a compile-time error
   ! because MyColor_e and MyDirection_e are different types.
-  ! This demonstrates the type safety provided by forenum.
+  ! This demonstrates the type safety provided by fortenum.
   !
   ! if (COLOR_RED == DIR_NORTH) then
   !   write(*,*) "TYPE SAFETY FAIL: COLOR_RED == DIR_NORTH (This should not compile)"
@@ -94,9 +94,9 @@ program test_forenum_program
   write(*,*) "========================="
   write(*, '(A, I0, A, I0, A)') "Tests completed: ", pass_count, "/", test_count, " passed."
   if (pass_count == test_count) then
-    write(*,*) "All Forenum tests passed successfully!"
+    write(*,*) "All fortenum tests passed successfully!"
   else
-    write(*,*) "Some Forenum tests FAILED."
+    write(*,*) "Some fortenum tests FAILED."
   end if
   write(*,*) "========================="
 
@@ -115,4 +115,4 @@ contains
       write(*, '(A)') "FAIL"
     end if
   end subroutine check
-end program test_forenum_program
+end program test_fortenum_program
